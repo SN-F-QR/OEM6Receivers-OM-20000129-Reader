@@ -1,0 +1,7 @@
+E:\code\testForLesson\GPS\bin\Debug\GPS.exe.config
+E:\code\testForLesson\GPS\bin\Debug\GPS.exe
+E:\code\testForLesson\GPS\bin\Debug\GPS.pdb
+E:\code\testForLesson\GPS\obj\Debug\GPS.csprojAssemblyReference.cache
+E:\code\testForLesson\GPS\obj\Debug\GPS.csproj.CoreCompileInputs.cache
+E:\code\testForLesson\GPS\obj\Debug\GPS.exe
+E:\code\testForLesson\GPS\obj\Debug\GPS.pdb

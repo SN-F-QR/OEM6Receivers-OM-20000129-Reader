@@ -1,0 +1,10 @@
+E:\code\testForLesson\UIofGPS\bin\Debug\UIofGPS.exe.config
+E:\code\testForLesson\UIofGPS\bin\Debug\UIofGPS.exe
+E:\code\testForLesson\UIofGPS\bin\Debug\UIofGPS.pdb
+E:\code\testForLesson\UIofGPS\obj\Debug\UIofGPS.csprojAssemblyReference.cache
+E:\code\testForLesson\UIofGPS\obj\Debug\UIofGPS.MainForm.resources
+E:\code\testForLesson\UIofGPS\obj\Debug\UIofGPS.Properties.Resources.resources
+E:\code\testForLesson\UIofGPS\obj\Debug\UIofGPS.csproj.GenerateResource.cache
+E:\code\testForLesson\UIofGPS\obj\Debug\UIofGPS.csproj.CoreCompileInputs.cache
+E:\code\testForLesson\UIofGPS\obj\Debug\UIofGPS.exe
+E:\code\testForLesson\UIofGPS\obj\Debug\UIofGPS.pdb

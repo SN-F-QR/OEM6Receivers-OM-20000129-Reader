@@ -1,0 +1,7 @@
+E:\code\testForLesson\testForLesson\obj\Debug\testForLesson.csprojAssemblyReference.cache
+E:\code\testForLesson\testForLesson\obj\Debug\testForLesson.csproj.CoreCompileInputs.cache
+E:\code\testForLesson\testForLesson\bin\Debug\testForLesson.exe.config
+E:\code\testForLesson\testForLesson\bin\Debug\testForLesson.exe
+E:\code\testForLesson\testForLesson\bin\Debug\testForLesson.pdb
+E:\code\testForLesson\testForLesson\obj\Debug\testForLesson.exe
+E:\code\testForLesson\testForLesson\obj\Debug\testForLesson.pdb

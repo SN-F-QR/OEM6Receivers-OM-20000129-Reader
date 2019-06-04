@@ -1,0 +1,11 @@
+E:\code\testForLesson\OpenFile\bin\Debug\OpenFile.exe.config
+E:\code\testForLesson\OpenFile\bin\Debug\OpenFile.exe
+E:\code\testForLesson\OpenFile\bin\Debug\OpenFile.pdb
+E:\code\testForLesson\OpenFile\obj\Debug\OpenFile.csprojAssemblyReference.cache
+E:\code\testForLesson\OpenFile\obj\Debug\OpenFile.Form1.resources
+E:\code\testForLesson\OpenFile\obj\Debug\OpenFile.Properties.Resources.resources
+E:\code\testForLesson\OpenFile\obj\Debug\OpenFile.csproj.GenerateResource.cache
+E:\code\testForLesson\OpenFile\obj\Debug\OpenFile.csproj.CoreCompileInputs.cache
+E:\code\testForLesson\OpenFile\obj\Debug\OpenFile.exe
+E:\code\testForLesson\OpenFile\obj\Debug\OpenFile.pdb
+E:\code\testForLesson\OpenFile\obj\Debug\OpenFile.Form2.resources
