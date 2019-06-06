@@ -43,10 +43,10 @@ namespace GPS
                         //将数据分类写入txt中
                         switch (test2.system.Last()+test2.s_type.Last())
                         {
-                            case 0:sw00.WriteLine(head.UTC+","+test2.psr.Last()+","+test2.adr.Last());break;
-                            case 9:sw09.WriteLine(head.UTC + "," + test2.psr.Last() + "," + test2.adr.Last()); break;
-                            case 1:sw10.WriteLine(head.UTC + "," + test2.psr.Last() + "," + test2.adr.Last()); break;
-                            case 6:sw15.WriteLine(head.UTC + "," + test2.psr.Last() + "," + test2.adr.Last()); break;
+                            case 0:sw00.WriteLine(head.UTC+","+test2.PRN+","+test2.psr.Last()+","+test2.adr.Last());break;
+                            case 9:sw09.WriteLine(head.UTC + "," + test2.PRN + ","+ test2.psr.Last() + "," + test2.adr.Last()); break;
+                            case 1:sw10.WriteLine(head.UTC + "," + test2.PRN + "," + test2.psr.Last() + "," + test2.adr.Last()); break;
+                            case 6:sw15.WriteLine(head.UTC + "," + test2.PRN + "," + test2.psr.Last() + "," + test2.adr.Last()); break;
                             default:throw new Exception("有未知量！！！");
                         }
                     }

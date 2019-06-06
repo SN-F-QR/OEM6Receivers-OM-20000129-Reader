@@ -17,6 +17,7 @@ namespace GPS
     public struct RA   //Range ID:43 Length:H+4+(#obs x 44)+4(已包括CRC)
     {
         public UInt32 obs;
+        public UInt16 PRN;
         public List<double> psr;
         public List<double> adr;
         public List<UInt32> ch_tr_status;
@@ -101,7 +102,9 @@ namespace GPS
         }
         public static RA ReadRange(FileStream fs, BinaryReader br,RA range)//原理类似
         {
-            fs.Seek(4, SeekOrigin.Current);
+            range.PRN = br.ReadUInt16();
+            Console.WriteLine(range.PRN);
+            fs.Seek(2, SeekOrigin.Current);
             range.psr.Add(br.ReadDouble());
             fs.Seek(4, SeekOrigin.Current);
             range.adr.Add(br.ReadDouble());
@@ -174,6 +177,53 @@ namespace GPS
             DateTime gpsBeginTime = new DateTime(1980, 1, 6, 0, 0, 0);
             gpsBeginTime = gpsBeginTime.AddSeconds(difFromBegin);
             return gpsBeginTime.AddSeconds(-18.0);
+        }
+        //将卫星分离
+        public static void SpRange(string prn)
+        {
+            FileStream fs = new FileStream("RangeData09.txt", FileMode.Open, FileAccess.Read);
+            FileStream fr = new FileStream(prn+"RangeData09.txt", FileMode.Create, FileAccess.Write);
+            StreamReader sr = new StreamReader(fs);
+            StreamWriter sw = new StreamWriter(fr);
+            string line;
+            char[] mark = new char[] { ',' };
+            string[] lineArray;
+            for(; ; )
+            {
+                line = sr.ReadLine();
+                if (line == null)
+                {
+                    break;
+                }
+                lineArray = line.Split(mark);
+                if (lineArray[1] == prn)
+                {
+                    sw.WriteLine(line);
+                }
+            }
+            sr.Close();
+            sw.Close();
+            fs.Close();
+            fr.Close();
+        }
+        //帮助找到一个刚刚捕获的卫星，便于记录其过境全过程
+        public static void FindNew(string prn)
+        {
+            FileStream fs = new FileStream("RangeData00.txt", FileMode.Open, FileAccess.Read);
+            StreamReader sr = new StreamReader(fs);
+            string line;
+            char[] mark = new char[] { ',' };
+            string[] lineArray;
+            for(; ; )
+            {
+                line = sr.ReadLine();
+                lineArray = line.Split(mark);
+                if (lineArray[1] == prn)
+                {
+                    Console.WriteLine(lineArray[0]);
+                    break;
+                }
+            }
         }
     }
 }

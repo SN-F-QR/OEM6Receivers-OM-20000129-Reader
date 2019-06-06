@@ -53,7 +53,7 @@
             this.文件ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(893, 25);
+            this.menuStrip1.Size = new System.Drawing.Size(1331, 25);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -68,7 +68,7 @@
             // 打开ToolStripMenuItem
             // 
             this.打开ToolStripMenuItem.Name = "打开ToolStripMenuItem";
-            this.打开ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.打开ToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.打开ToolStripMenuItem.Text = "打开";
             // 
             // button1
@@ -113,16 +113,15 @@
             this.button3.TabIndex = 4;
             this.button3.Text = "绘制图像";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.Button3_Click);
             // 
             // 绘图选择
             // 
             this.绘图选择.CheckOnClick = true;
             this.绘图选择.FormattingEnabled = true;
             this.绘图选择.Items.AddRange(new object[] {
-            "GPS,L1 C/A(0,0)",
-            "GPS,L2 P codeless(0,9)",
-            "GLONASS,L1 C/A(1,0)",
-            "GLONASS,L2 P(1,5)"});
+            "GPS 26 TECA",
+            "GPS 26 TECR"});
             this.绘图选择.Location = new System.Drawing.Point(12, 281);
             this.绘图选择.Name = "绘图选择";
             this.绘图选择.Size = new System.Drawing.Size(178, 76);
@@ -135,14 +134,14 @@
             this.chart1.Cursor = System.Windows.Forms.Cursors.Default;
             legend1.Name = "Legend1";
             this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(208, 49);
+            this.chart1.Location = new System.Drawing.Point(207, 39);
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(656, 284);
+            this.chart1.Size = new System.Drawing.Size(1100, 539);
             this.chart1.TabIndex = 6;
             this.chart1.Text = "chart1";
             // 
@@ -172,7 +171,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(893, 380);
+            this.ClientSize = new System.Drawing.Size(1331, 605);
             this.Controls.Add(this.radioButton2);
             this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.chart1);
@@ -206,9 +205,9 @@
         private System.Windows.Forms.CheckedListBox 输出选择;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.CheckedListBox 绘图选择;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
     }
 }
 
