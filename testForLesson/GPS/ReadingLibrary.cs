@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows.Forms;
 //采用先判断头文件(只读取一部分），再进行读取
 namespace GPS
 {
@@ -225,5 +226,64 @@ namespace GPS
                 }
             }
         }
+        //For UI
+        public static Head ReadHeadForUI(FileStream fs, BinaryReader br,TextBox txb)
+        {
+            //string[] check = new string[3] { "170", "68", "18" }; //用于检查异常，只要有非法部分，下一次必定不是这个
+            Head myHead;
+            myHead.sync = br.ReadBytes(3);
+            myHead.HeaderLgth = br.ReadByte();//表给的uchar，直接读byte
+            myHead.MessageID = br.ReadUInt16();//到这里已经读了6byte
+            txb.AppendText("Mark:");
+            for (int i = 0; i < myHead.sync.Length; i++)
+            {
+                txb.AppendText(myHead.sync[i] + " ");
+                //}
+                //else
+                //{
+                //    throw new Exception("nimadeweishenme?");
+                //}
+            }
+            txb.AppendText("\r\n");
+            txb.AppendText("HeadLgth " + myHead.HeaderLgth.ToString()+"\r\n");
+            txb.AppendText("ID " + myHead.MessageID.ToString()+"\r\n");
+            fs.Seek(8, SeekOrigin.Current); //指到time部分
+            myHead.week = br.ReadUInt16();
+            myHead.gpss = br.ReadInt32();
+            myHead.UTC = GpstToUTC(myHead.week, myHead.gpss);
+            txb.AppendText(myHead.UTC+"\r\n");
+            fs.Seek(8, SeekOrigin.Current);
+            return myHead;
+        }
+        public static BP ReadBestPosForUI(FileStream fs, BinaryReader br, BP bestPos,TextBox txb)
+        {
+            fs.Seek(8, SeekOrigin.Current);//直接到3个数据前面
+            bestPos.lat = br.ReadDouble();
+            bestPos.lon = br.ReadDouble();
+            bestPos.hgt = br.ReadDouble();
+            txb.AppendText("lat:" + bestPos.lat+"\r\n");
+            txb.AppendText("lon" + bestPos.lon+"\r\n");
+            txb.AppendText("hgt" + bestPos.hgt+"\r\n");
+            fs.Seek(44, SeekOrigin.Current);
+            return bestPos;
+        }
+        public static RA ReadRangeForUI(FileStream fs, BinaryReader br, RA range,TextBox txb)//原理类似
+        {
+            range.PRN = br.ReadUInt16();
+            txb.AppendText(range.PRN+"\r\n");
+            fs.Seek(2, SeekOrigin.Current);
+            range.psr.Add(br.ReadDouble());
+            fs.Seek(4, SeekOrigin.Current);
+            range.adr.Add(br.ReadDouble());
+            fs.Seek(16, SeekOrigin.Current);
+            range.ch_tr_status.Add(br.ReadUInt32());
+            txb.AppendText(range.psr.Last()+"\r\n");
+            txb.AppendText(range.adr.Last()+"\r\n");
+            txb.AppendText(range.ch_tr_status.Last()+"\r\n");
+            range.system.Add(DoSys(range.ch_tr_status.Last()));
+            range.s_type.Add(DoStype(range.ch_tr_status.Last()));
+            return range;
+        }
+
     }
 }
