@@ -26,7 +26,6 @@ namespace UIofGPS
         {
 
         }
-        //待解决：用DateTime优化
         private void Button3_Click(object sender, EventArgs e)
         {
             chart1.Series[0].Points.Clear();
@@ -43,10 +42,10 @@ namespace UIofGPS
             chart.AxisY.LabelStyle.Format = "";
             chart.AxisY.LabelStyle.IsEndLabelVisible = true;
             chart.AxisX.Minimum = 0;
-            chart.AxisX.Maximum = 600;
+            chart.AxisX.Maximum = 700;
             //chart.AxisY.Minimum = 1*9.52;            
             //chart.AxisY.Maximum = 15*9.52;
-            chart.AxisX.Interval = 10;
+            chart.AxisX.Interval = 20;
             //chart.AxisY.Interval = 9.52;
             var data = chart1.Series[0];
             data.ChartType = SeriesChartType.Spline;
@@ -73,26 +72,28 @@ namespace UIofGPS
             FileStream fs2 = new FileStream(path2, FileMode.Open, FileAccess.Read);
             StreamReader sr = new StreamReader(fs);//L1
             StreamReader sr2 = new StreamReader(fs2);//L2
+            List<double> allMark = new List<double>();//记录断点处的标记
+            List<double> allPc = new List<double>();//记录断点处的pc
             double mark = 0.5;//设置横坐标变量，待改动
             double psr, adr;
             double pc=0; //记录偏差值
             string line1,line2;//获取行值作暂时储存
             string[] stringArray1 , old1;//储存分割后的行值
             string[] stringArray2, old2;
-            string[] news, olds;
+            DateTime newtime, oldtime;
             char[] charArray = new char[] { ',' };//用于分割的标记
             line1 = sr.ReadLine();
             line2 = sr2.ReadLine();
             //先读一次新建Old的内容
             old1 = line1.Split(charArray);//储存上一次存入的数据，用于与新的比较
             old2 = line2.Split(charArray);
-            olds = old1[0].Split(':');
-            olds[2] = MakeSame(old1[0], old2[0], sr, sr2);
+            oldtime = Convert.ToDateTime(old1[0]);
+            oldtime = MakeSame(old1[0], old2[0], sr, sr2);
             //psr= (Convert.ToDouble(old2[2]) - Convert.ToDouble(old1[2]))*9.52;
             //adr = (Convert.ToDouble(old2[3]) / 120 - Convert.ToDouble(old1[3]) / 154) * 279.2;
             //data.Points.AddXY(0.5, psr);
             //data2.Points.AddXY(0.5, adr);
-            while (mark<600)//待改
+            while (mark<700)//待改
             {
                 line1 = sr.ReadLine();
                 line2 = sr2.ReadLine();
@@ -102,107 +103,124 @@ namespace UIofGPS
                 }
                 stringArray1 = line1.Split(charArray);
                 stringArray2 = line2.Split(charArray);
-                news = stringArray1[0].Split(':');
+                if (IfTogether(stringArray1[0], old1[0]))
+                {
+                    allMark.Add(mark);
+                    allPc.Add(pc);
+                    pc = 0;
+                    mark += 25;//下面还有个25
+                    old1 = stringArray1;
+                    oldtime = Convert.ToDateTime(old1[0]);
+                }
+                newtime = Convert.ToDateTime(stringArray1[0]);
                 if (stringArray1[0] != stringArray2[0])
                 {
-                    olds[2]=MakeSame(stringArray1[0], stringArray2[0], sr, sr2);
+                    oldtime = MakeSame(stringArray1[0], stringArray2[0], sr, sr2);
                 }
-                //if (mark == 490)
+                //if (mark == 176)
                 //{
 
                 //}
-                if (Convert.ToInt32(news[2]) == AddThirty(olds[2]))
+                if (newtime.Second == oldtime.AddSeconds(20).Second)
                 {
-                    mark += 0.5;
+                    
                     psr = (Convert.ToDouble(stringArray2[2]) - Convert.ToDouble(stringArray1[2])) * 9.52;
                     adr = (Convert.ToDouble(stringArray2[3]) / 120 - Convert.ToDouble(stringArray1[3]) / 154) * 279.2;
-                    pc += (psr - adr);
-                    data.Points.AddXY(mark, psr);
-                    data2.Points.AddXY(mark, adr);
-                    old1 = stringArray1;
-                    old2 = stringArray2;
-                    olds = old1[0].Split(':');
+                    if((psr<10000 && psr > -10000) || (adr < 10000 && adr > -10000))//有一种很特殊的情况导致错误，这里用了简单解决方法
+                    {
+                        mark += 0.5;
+                        pc += (psr - adr);
+                        data.Points.AddXY(mark, psr);
+                        data2.Points.AddXY(mark, adr);
+                        old1 = stringArray1;
+                        old2 = stringArray2;
+                        oldtime = Convert.ToDateTime(old1[0]);
+                    }
                 }                
             }
-            pc = pc / (mark*2);
+            allMark.Add(mark);
+            allPc.Add(pc);
+            textBox1.Text = "卫星过境次数:" + allMark.Count+"\r\n";
+            textBox1.AppendText("分别结束在横坐标:");
+            foreach(var k in allMark)
+            {
+                textBox1.AppendText(k + "  ");
+            }
             double tmp;
-            foreach(DataPoint add in data2.Points)
+            int start = 0;
+            for(int i=0;i<allMark.Count;i++)//allMark[]为每轮结尾值,i+1为轮数
             {
-                tmp = add.YValues[0];
-                add.SetValueY(tmp + pc);
+                if (i == 0)//作各段均值运算
+                    pc = allPc[i] / (allMark[0] * 2);
+                else
+                {
+                    pc = allPc[i] / ((allMark[i] - allMark[i - 1] - 25) * 2);
+                }
+                for ( ; start < (allMark[i] - 25 * i )* 2-1; start ++)//作加均值运算
+                {
+                    tmp = data2.Points[start].YValues[0];
+                    data2.Points[start].SetValueY(tmp + pc);
+                }
             }
-        }
-        //加时器
-        private int AddThirty(string old)
-        {
-            int oldt;
-            oldt = Convert.ToInt32(old) + 20;
-            if (oldt >= 60)
-            {
-                oldt = oldt - 60;
-            }
-            return oldt;
         }
         //使时间同步
-        private string MakeSame(string time1,string time2,StreamReader sr1,StreamReader sr2)
+        private DateTime MakeSame(string time1,string time2,StreamReader sr1,StreamReader sr2)
         {
             DateTime timeA = Convert.ToDateTime(time1);
             DateTime timeB = Convert.ToDateTime(time2);
-            TimeSpan n;//差值
+            string line;
+           // TimeSpan n;//差值
             if (timeA > timeB)
             {
-                n = timeA - timeB;
-                double cha = n.TotalSeconds;
-                for (int m = 0; m < cha; m++)
+                for(; ; )
                 {
-                    sr2.ReadLine();
+                    if (timeB < timeA)
+                    {
+                        line=sr2.ReadLine();
+                        timeB = Convert.ToDateTime(line.Split(',')[0]);
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                return timeA.Second.ToString();
+                return timeA;
             }
             else
             {
-                n = timeB - timeA;
-                double cha = n.TotalSeconds;
-                for (int m = 0; m < cha; m++)
+                for (; ; )
                 {
-                    sr1.ReadLine();
+                    if (timeB > timeA)
+                    {
+                        line = sr1.ReadLine();
+                        timeA = Convert.ToDateTime(line.Split(',')[0]);
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                return timeB.Second.ToString();
+                return timeB;
             }
-            //if(timeA==0 && timeB > timeA && minA!=minB)
-            //{
-            //    for (int m = 0; m < 60-timeB; m++)
-            //    {
-            //        sr2.ReadLine();
-            //    }
-            //    return timeA.ToString();
-            //}
-            //else if(timeB==0 && timeA > timeB && minA!=minB)
-            //{
-            //    for (int m = 0; m < 60 - timeA; m++)
-            //    {
-            //        sr1.ReadLine();
-            //    }
-            //    return timeB.ToString();
-            //}
-            //else if (timeA > timeB)
-            //{
-            //    n = timeA - timeB;
-            //    for(int m = 0; m < n; m++)
-            //    {
-            //        sr2.ReadLine();
-            //    }
-            //    return timeA.ToString();
-            //}
-            //else 
-            //{
-            //    n = timeB - timeA;
-            //    for (int m = 0; m < n; m++)
-            //    {
-            //        sr1.ReadLine();
-            //    }
-            //    return timeB.ToString();
-            //}
+        }
+        /// <summary>
+        /// 判断时间是否跳跃
+        /// </summary>
+        /// <param name="time1"></param>
+        /// <param name="time2"></param>
+        /// <returns></returns>
+        private bool IfTogether(string time1, string time2)
+        {
+            DateTime timeA = Convert.ToDateTime(time1);
+            DateTime timeB = Convert.ToDateTime(time2);
+            if (timeA.Hour != timeB.Hour && timeA.Hour != timeB.AddHours(1).Hour)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -279,8 +297,11 @@ namespace UIofGPS
 
         private void Button1_Click(object sender, EventArgs e)
         {
+            OpenFileDialog path = new OpenFileDialog();
+            path.ShowDialog();
+            string lu = path.FileName;
             FileStream fs;
-            fs = new FileStream("data.gps", FileMode.Open, FileAccess.Read);
+            fs = new FileStream(lu, FileMode.Open, FileAccess.Read);
             BinaryReader br = new BinaryReader(fs);
             Head head;
             while (br.BaseStream.Position < br.BaseStream.Length)
@@ -321,6 +342,85 @@ namespace UIofGPS
              }
              br.Close();
              fs.Close();
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog path = new OpenFileDialog();
+            path.ShowDialog();
+            string lu = path.FileName;
+            FileStream fs;
+            fs = new FileStream(lu, FileMode.Open, FileAccess.Read);
+            BinaryReader br = new BinaryReader(fs);
+            FileStream totxt00 = new FileStream("RangeData00.txt", FileMode.Create, FileAccess.Write);
+            FileStream totxt09 = new FileStream("RangeData09.txt", FileMode.Create, FileAccess.Write);
+            FileStream totxt10 = new FileStream("RangeData10.txt", FileMode.Create, FileAccess.Write);
+            FileStream totxt15 = new FileStream("RangeData15.txt", FileMode.Create, FileAccess.Write);
+            StreamWriter sw00 = new StreamWriter(totxt00);
+            StreamWriter sw09 = new StreamWriter(totxt09);
+            StreamWriter sw10 = new StreamWriter(totxt10);
+            StreamWriter sw15 = new StreamWriter(totxt15);
+            Head head;
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                head = ReadingLibrary.ReadHeadForUI(fs, br, textBox1);
+                if (head.MessageID == 42)
+                {
+                    BP test1 = new BP();
+                    test1 = ReadingLibrary.ReadBestPosForUI(fs, br, test1, textBox1);
+                }
+                else if (head.MessageID == 43)
+                {
+                    RA test2 = new RA();
+                    test2 = ReadingLibrary.ReadObs(br);
+                    for (uint i = 0; i < test2.obs; i++)
+                    {
+                        textBox1.AppendText("No." + i + ":" + "\r\n");
+                        test2 = ReadingLibrary.ReadRangeForUI(fs, br, test2, textBox1);
+                        //将数据分类写入txt中
+                        switch (test2.system.Last() + test2.s_type.Last())
+                        {
+                            case 0: sw00.WriteLine(head.UTC + "," + test2.PRN + "," + test2.psr.Last() + "," + test2.adr.Last()); break;
+                            case 9: sw09.WriteLine(head.UTC + "," + test2.PRN + "," + test2.psr.Last() + "," + test2.adr.Last()); break;
+                            case 1: sw10.WriteLine(head.UTC + "," + test2.PRN + "," + test2.psr.Last() + "," + test2.adr.Last()); break;
+                            case 6: sw15.WriteLine(head.UTC + "," + test2.PRN + "," + test2.psr.Last() + "," + test2.adr.Last()); break;
+                            default: throw new Exception("有未知量！！！");
+                        }
+                    }
+                    fs.Seek(4, SeekOrigin.Current);
+                }
+                else if (head.MessageID == 1043)
+                {
+                    SA test3 = new SA();
+                    test3 = ReadingLibrary.ReadSat(fs, br);
+                    for (uint i = 0; i < test3.sat; i++)
+                    {
+                        Console.WriteLine("No." + i + ":");
+                        test3 = ReadingLibrary.ReadRange(fs, br, test3);
+                    }
+                    fs.Seek(4, SeekOrigin.Current);
+                }
+                else
+                {
+                    ReadingLibrary.FindNextHead(fs, br);
+                }
+            }
+            sw00.Close();
+            sw09.Close();
+            sw10.Close();
+            sw15.Close();
+            totxt00.Close();
+            totxt09.Close();
+            totxt10.Close();
+            totxt15.Close();
+            br.Close();
+            fs.Close();
+            for (int n = 1; n < 33; n++)
+            {
+                ReadingLibrary.SpRange09(n.ToString());
+                ReadingLibrary.SpRange00(n.ToString());
+            }
+            MessageBox.Show("输出成功！");
         }
     }
 }

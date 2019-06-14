@@ -36,6 +36,7 @@ namespace GPS
         public byte[] sync;
         public byte HeaderLgth;//uchar
         public UInt16 MessageID;
+        public UInt16 MessageLg;
         public UInt16 week;
         public int gpss;
         public DateTime UTC;
@@ -54,6 +55,8 @@ namespace GPS
             myHead.sync= br.ReadBytes(3);
             myHead.HeaderLgth = br.ReadByte();//表给的uchar，直接读byte
             myHead.MessageID = br.ReadUInt16();//到这里已经读了6byte
+            fs.Seek(2, SeekOrigin.Current);
+            myHead.MessageLg = br.ReadUInt16();
             Console.Write("Mark:");
             for (int i = 0; i < myHead.sync.Length; i++)
             {
@@ -67,7 +70,8 @@ namespace GPS
             Console.WriteLine();
             Console.WriteLine("HeadLgth "+myHead.HeaderLgth.ToString());
             Console.WriteLine("ID "+myHead.MessageID.ToString());
-            fs.Seek(8, SeekOrigin.Current); //指到time部分
+            Console.WriteLine("MessageLg" + myHead.MessageLg.ToString());
+            fs.Seek(4, SeekOrigin.Current); //指到time部分
             myHead.week = br.ReadUInt16();
             myHead.gpss = br.ReadInt32();
             myHead.UTC = GpstToUTC(myHead.week, myHead.gpss);
@@ -180,7 +184,7 @@ namespace GPS
             return gpsBeginTime.AddSeconds(-18.0);
         }
         //将卫星分离
-        public static void SpRange(string prn)
+        public static void SpRange09(string prn)
         {
             FileStream fs = new FileStream("RangeData09.txt", FileMode.Open, FileAccess.Read);
             FileStream fr = new FileStream(prn+"RangeData09.txt", FileMode.Create, FileAccess.Write);
@@ -190,6 +194,33 @@ namespace GPS
             char[] mark = new char[] { ',' };
             string[] lineArray;
             for(; ; )
+            {
+                line = sr.ReadLine();
+                if (line == null)
+                {
+                    break;
+                }
+                lineArray = line.Split(mark);
+                if (lineArray[1] == prn)
+                {
+                    sw.WriteLine(line);
+                }
+            }
+            sr.Close();
+            sw.Close();
+            fs.Close();
+            fr.Close();
+        }
+        public static void SpRange00(string prn)
+        {
+            FileStream fs = new FileStream("RangeData00.txt", FileMode.Open, FileAccess.Read);
+            FileStream fr = new FileStream(prn + "RangeData00.txt", FileMode.Create, FileAccess.Write);
+            StreamReader sr = new StreamReader(fs);
+            StreamWriter sw = new StreamWriter(fr);
+            string line;
+            char[] mark = new char[] { ',' };
+            string[] lineArray;
+            for (; ; )
             {
                 line = sr.ReadLine();
                 if (line == null)
@@ -234,6 +265,8 @@ namespace GPS
             myHead.sync = br.ReadBytes(3);
             myHead.HeaderLgth = br.ReadByte();//表给的uchar，直接读byte
             myHead.MessageID = br.ReadUInt16();//到这里已经读了6byte
+            fs.Seek(2, SeekOrigin.Current);
+            myHead.MessageLg = br.ReadUInt16();
             txb.AppendText("Mark:");
             for (int i = 0; i < myHead.sync.Length; i++)
             {
@@ -247,7 +280,8 @@ namespace GPS
             txb.AppendText("\r\n");
             txb.AppendText("HeadLgth " + myHead.HeaderLgth.ToString()+"\r\n");
             txb.AppendText("ID " + myHead.MessageID.ToString()+"\r\n");
-            fs.Seek(8, SeekOrigin.Current); //指到time部分
+            txb.AppendText("MessageLg" + myHead.MessageLg.ToString());
+            fs.Seek(4, SeekOrigin.Current); //指到time部分
             myHead.week = br.ReadUInt16();
             myHead.gpss = br.ReadInt32();
             myHead.UTC = GpstToUTC(myHead.week, myHead.gpss);

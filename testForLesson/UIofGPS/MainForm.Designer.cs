@@ -41,7 +41,6 @@
             this.打开ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.输出选择 = new System.Windows.Forms.CheckedListBox();
             this.button3 = new System.Windows.Forms.Button();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
@@ -97,25 +96,11 @@
             this.button2.TabIndex = 2;
             this.button2.Text = "读取并输出";
             this.button2.UseVisualStyleBackColor = true;
-            // 
-            // 输出选择
-            // 
-            this.输出选择.CheckOnClick = true;
-            this.输出选择.FormattingEnabled = true;
-            this.输出选择.Items.AddRange(new object[] {
-            "GPS,L1 C/A(0,0)",
-            "GPS,L2 P codeless(0,9)",
-            "GLONASS,L1 C/A(1,0)",
-            "GLONASS,L2 P(1,5)"});
-            this.输出选择.Location = new System.Drawing.Point(12, 158);
-            this.输出选择.Name = "输出选择";
-            this.输出选择.Size = new System.Drawing.Size(178, 76);
-            this.输出选择.TabIndex = 3;
-            this.输出选择.SelectedIndexChanged += new System.EventHandler(this.输出选择_SelectedIndexChanged);
+            this.button2.Click += new System.EventHandler(this.Button2_Click);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(12, 240);
+            this.button3.Location = new System.Drawing.Point(12, 158);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(88, 35);
             this.button3.TabIndex = 4;
@@ -228,7 +213,7 @@
             "GPS 30",
             "GPS 31",
             "GPS 32"});
-            this.comboBox1.Location = new System.Drawing.Point(12, 282);
+            this.comboBox1.Location = new System.Drawing.Point(12, 200);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(144, 25);
             this.comboBox1.TabIndex = 9;
@@ -236,7 +221,7 @@
             // 
             // Up
             // 
-            this.Up.Location = new System.Drawing.Point(106, 240);
+            this.Up.Location = new System.Drawing.Point(106, 158);
             this.Up.Name = "Up";
             this.Up.Size = new System.Drawing.Size(37, 35);
             this.Up.TabIndex = 10;
@@ -246,7 +231,7 @@
             // 
             // next
             // 
-            this.next.Location = new System.Drawing.Point(149, 241);
+            this.next.Location = new System.Drawing.Point(149, 159);
             this.next.Name = "next";
             this.next.Size = new System.Drawing.Size(37, 35);
             this.next.TabIndex = 11;
@@ -276,7 +261,6 @@
             this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.button3);
-            this.Controls.Add(this.输出选择);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.menuStrip1);
@@ -301,7 +285,6 @@
         private System.Windows.Forms.ToolStripMenuItem 打开ToolStripMenuItem;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.CheckedListBox 输出选择;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.RadioButton radioButton2;
