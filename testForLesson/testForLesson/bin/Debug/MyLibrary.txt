@@ -1,3 +1,0 @@
-Name,CreateTime,Author
-Science,2017,Hacker
-name,time,people
